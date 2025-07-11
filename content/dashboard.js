@@ -406,6 +406,15 @@
       setTimeout(() => conf.remove(), 1400);
     }
   }
+  // Celebratory animation on completion
+  function showCelebration() {
+    showConfettiBurst();
+    showDelightMessage('🎉 All jobs applied! Great work!');
+  }
+  // Hook into progress and completion flows
+  window.updateProgressBar = updateProgressBar;
+  window.announceAutoApplyStatus = announceAutoApplyStatus;
+  window.showCelebration = showCelebration;
   // Konami code Easter egg
   let konamiBuffer = [];
   const konamiCode = [
@@ -490,17 +499,39 @@
   autoApplyBtn.onclick = showAutoApplyModal;
   document.querySelector('.uwu-dashboard-header').appendChild(autoApplyBtn);
 
-  // Auto-Apply progress UI
-  const autoApplyProgress = document.createElement('div');
-  autoApplyProgress.id = 'uwu-auto-apply-progress';
-  autoApplyProgress.setAttribute('aria-live', 'polite');
-  autoApplyProgress.className = 'uwu-auto-apply-progress';
-  document.querySelector('.uwu-dashboard-header').appendChild(autoApplyProgress);
-  function updateDashboardAutoApplyProgress(msg) {
-    autoApplyProgress.textContent = msg;
+  // Animated progress bar for full auto-applier
+  const autoApplyProgressBar = document.createElement('div');
+  autoApplyProgressBar.id = 'uwu-auto-apply-progress-bar';
+  autoApplyProgressBar.setAttribute('role', 'progressbar');
+  autoApplyProgressBar.setAttribute('aria-valuemin', '0');
+  autoApplyProgressBar.setAttribute('aria-valuemax', '100');
+  autoApplyProgressBar.setAttribute('aria-valuenow', '0');
+  autoApplyProgressBar.className = 'uwu-progress-bar';
+  document.querySelector('.uwu-dashboard-header').appendChild(autoApplyProgressBar);
+  function updateProgressBar(applied, total) {
+    const percent = total ? Math.round((applied / total) * 100) : 0;
+    autoApplyProgressBar.style.width = percent + '%';
+    autoApplyProgressBar.setAttribute('aria-valuenow', percent);
+    autoApplyProgressBar.textContent = percent + '%';
   }
-  // Hook into core.js updateAutoApplyProgress
-  window.updateDashboardAutoApplyProgress = updateDashboardAutoApplyProgress;
+  // ARIA live region for status
+  const autoApplyStatusRegion = document.createElement('div');
+  autoApplyStatusRegion.id = 'uwu-auto-apply-status-region';
+  autoApplyStatusRegion.setAttribute('aria-live', 'polite');
+  autoApplyStatusRegion.className = 'visually-hidden';
+  document.body.appendChild(autoApplyStatusRegion);
+  function announceAutoApplyStatus(msg) {
+    autoApplyStatusRegion.textContent = msg;
+  }
+  // Celebratory animation on completion
+  function showCelebration() {
+    showConfettiBurst();
+    showDelightMessage('🎉 All jobs applied! Great work!');
+  }
+  // Hook into progress and completion flows
+  window.updateProgressBar = updateProgressBar;
+  window.announceAutoApplyStatus = announceAutoApplyStatus;
+  window.showCelebration = showCelebration;
 
   // Auto-Apply logic
   function startAutoApply(boards, title, location, filters) {
