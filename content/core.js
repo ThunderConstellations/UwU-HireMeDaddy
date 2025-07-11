@@ -126,3 +126,20 @@ async function translateAnswer(answer, targetLang) {
     return answer;
   }
 }
+
+// Captcha detection for auto-apply
+function detectCaptcha(form) {
+  // Check for common captcha widgets
+  if (
+    form.querySelector('.g-recaptcha, iframe[src*="recaptcha"], .h-captcha, iframe[src*="hcaptcha"]')
+  ) {
+    showUwUToast('Captcha detected! Please solve it to continue.', 'error');
+    const region = document.getElementById('uwu-dashboard-toast-container');
+    if (region) {
+      region.textContent = 'Captcha detected! Automation paused. Please solve the captcha.';
+      region.setAttribute('aria-live', 'assertive');
+    }
+    // Pause automation (return false or throw)
+    throw new Error('Captcha detected');
+  }
+}
