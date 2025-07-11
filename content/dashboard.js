@@ -559,6 +559,38 @@
         return '';
     }
   }
+
+  // Virtualized list for history and error logs (inspired by react-window)
+  function renderVirtualizedList(container, items, renderItem, itemHeight = 48, visibleCount = 10) {
+    container.innerHTML = '';
+    const totalHeight = items.length * itemHeight;
+    const viewport = document.createElement('div');
+    viewport.style.height = (visibleCount * itemHeight) + 'px';
+    viewport.style.overflowY = 'auto';
+    viewport.setAttribute('tabindex', '0');
+    viewport.setAttribute('aria-label', 'Virtualized list');
+    const inner = document.createElement('div');
+    inner.style.height = totalHeight + 'px';
+    viewport.appendChild(inner);
+    container.appendChild(viewport);
+    function renderVisible() {
+      const scrollTop = viewport.scrollTop;
+      const start = Math.floor(scrollTop / itemHeight);
+      const end = Math.min(items.length, start + visibleCount + 2);
+      inner.innerHTML = '';
+      for (let i = start; i < end; i++) {
+        const el = renderItem(items[i], i);
+        el.style.position = 'absolute';
+        el.style.top = (i * itemHeight) + 'px';
+        el.style.left = 0;
+        el.style.right = 0;
+        inner.appendChild(el);
+      }
+    }
+    viewport.addEventListener('scroll', renderVisible);
+    renderVisible();
+  }
+  // Use renderVirtualizedList for history and error logs
 })();
 
 // Accessibility refinements
