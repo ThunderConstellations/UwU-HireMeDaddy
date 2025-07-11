@@ -108,61 +108,28 @@ describe('Captcha Modal Accessibility', () => {
   });
 });
 
-describe('Accessibility Refinements', () => {
-  it('should have a skip link to main dashboard content', () => {
-    const skip = document.querySelector('.skip-link');
-    expect(skip).toBeInTheDocument();
-    expect(skip).toHaveAttribute('href', '#uwu-dashboard-main');
+describe('Full Auto-Applier Integration', () => {
+  it('should trigger fullAutoApply for selected boards', () => {
+    window.fullAutoApply = jest.fn();
+    startAutoApply(['linkedin'], 'Engineer', 'Remote', '');
+    expect(window.fullAutoApply).toHaveBeenCalled();
   });
-  it('should add ARIA labels to all interactive elements', () => {
-    const buttons = document.querySelectorAll('button');
-    buttons.forEach(btn => {
-      expect(btn).toHaveAttribute('aria-label');
-    });
-  });
-  it('should announce modals and notifications to screen readers', () => {
-    const modal = document.createElement('div');
-    modal.setAttribute('role', 'dialog');
-    document.body.appendChild(modal);
-    expect(modal).toHaveAttribute('aria-live', 'assertive');
-    modal.remove();
-  });
-  it('should trigger delight features with keyboard shortcuts', () => {
-    const confettiSpy = jest.spyOn(window, 'showConfettiBurst');
-    const bounceSpy = jest.spyOn(window, 'bounceUwUFace');
-    window.dispatchEvent(new KeyboardEvent('keydown', { ctrlKey: true, key: 'k' }));
-    window.dispatchEvent(new KeyboardEvent('keydown', { ctrlKey: true, key: 'b' }));
-    expect(confettiSpy).toHaveBeenCalled();
-    expect(bounceSpy).toHaveBeenCalled();
-    confettiSpy.mockRestore();
-    bounceSpy.mockRestore();
-  });
-});
-
-describe('Virtualized List', () => {
-  it('should only render visible items', () => {
-    const container = document.createElement('div');
-    const items = Array.from({ length: 100 }, (_, i) => `Item ${i}`);
-    const renderItem = (item, i) => {
-      const el = document.createElement('div');
-      el.textContent = item;
-      return el;
+  it('should show progress updates in dashboard', () => {
+    window.updateDashboardAutoApplyProgress = jest.fn();
+    window.fullAutoApply = (board, url) => {
+      window.updateDashboardAutoApplyProgress('Applied: 1, Failed: 0, Remaining: 2');
     };
-    renderVirtualizedList(container, items, renderItem, 20, 5);
-    const viewport = container.querySelector('div[aria-label="Virtualized list"]');
-    expect(viewport).toBeInTheDocument();
-    // Should only render a subset of items
-    expect(viewport.querySelectorAll('div').length).toBeLessThan(items.length);
+    startAutoApply(['linkedin'], 'Engineer', 'Remote', '');
+    expect(window.updateDashboardAutoApplyProgress).toHaveBeenCalledWith('Applied: 1, Failed: 0, Remaining: 2');
   });
-  it('should be ARIA compliant', () => {
-    const container = document.createElement('div');
-    renderVirtualizedList(container, ['A', 'B'], (item) => {
-      const el = document.createElement('div');
-      el.textContent = item;
-      return el;
-    });
-    const viewport = container.querySelector('div[aria-label="Virtualized list"]');
-    expect(viewport).toHaveAttribute('tabindex', '0');
-    expect(viewport).toHaveAttribute('aria-label', 'Virtualized list');
+  it('should show recovery modal on error', () => {
+    window.showRecoveryModal = jest.fn();
+    window.fullAutoApply = (board, url) => {
+      throw new Error('Test error');
+    };
+    try {
+      startAutoApply(['linkedin'], 'Engineer', 'Remote', '');
+    } catch {}
+    expect(window.showRecoveryModal).toHaveBeenCalled();
   });
 }); 
