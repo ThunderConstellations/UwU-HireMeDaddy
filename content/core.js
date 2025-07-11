@@ -174,23 +174,47 @@ function showCaptchaModal() {
   });
 }
 
-// Optimized Full Auto-Applier Orchestrator with concurrency
+// Ultra-Robust Full Auto-Applier Orchestrator
 async function fullAutoApply(board, searchUrl, runFnName = 'run', concurrency = 3) {
+  // Dynamic selectors per board
+  const selectors = {
+    linkedin: 'a[href*="/jobs/view/"]',
+    indeed: 'a[href*="/pagead/clk"], a[href*="/rc/clk"], a[href*="/company/"]',
+    monster: 'a[href*="/job/"], a[href*="/jobs/"], a.card-title',
+    glassdoor: 'a[href*="/partner/jobListing.htm"], a[href*="/job-listing/"], a.jobLink',
+  };
   let applied = 0, failed = 0, total = 0;
   let nextPageUrl = searchUrl;
   let pageCount = 0;
+  let allJobLinks = [];
+  // Crawl all pages first for job links (to avoid missing jobs on reload)
   while (nextPageUrl && pageCount < 10) {
     window.location.href = nextPageUrl;
-    await new Promise(res => setTimeout(res, 2500));
-    const jobLinks = Array.from(document.querySelectorAll('a[href*="/jobs/"]')).map(a => a.href);
-    total += jobLinks.length;
-    let i = 0;
-    while (i < jobLinks.length) {
-      const batch = jobLinks.slice(i, i + concurrency);
-      await Promise.all(batch.map(async (link) => {
+    await new Promise(res => setTimeout(res, 2500 + Math.random() * 1000));
+    const jobLinks = Array.from(document.querySelectorAll(selectors[board] || 'a[href*="/jobs/"]')).map(a => a.href);
+    allJobLinks.push(...jobLinks);
+    const nextBtn = document.querySelector('a[aria-label*="Next"], a[rel="next"], .pagination-next, .next-page');
+    nextPageUrl = nextBtn ? nextBtn.href : null;
+    pageCount++;
+  }
+  total = allJobLinks.length;
+  let i = 0;
+  let retryQueue = [];
+  while (i < allJobLinks.length || retryQueue.length) {
+    const batch = (retryQueue.length ? retryQueue.splice(0, concurrency) : allJobLinks.slice(i, i + concurrency));
+    await Promise.all(batch.map(async (link) => {
+      let attempts = 0;
+      while (attempts < 3) {
         try {
           const jobTab = window.open(link, '_blank');
-          await new Promise(res => setTimeout(res, 2000));
+          await new Promise(res => setTimeout(res, 2000 + Math.random() * 1000));
+          // Wait for job details or retry
+          let loaded = false;
+          for (let t = 0; t < 10; t++) {
+            if (jobTab.document.body.innerText.length > 100) { loaded = true; break; }
+            await new Promise(res => setTimeout(res, 500));
+          }
+          if (!loaded) throw new Error('Job page did not load in time');
           if (jobTab.document.body.innerText.match(/captcha|robot|verify/i)) {
             showCaptchaModal();
             throw new Error('Anti-bot detected');
@@ -200,22 +224,26 @@ async function fullAutoApply(board, searchUrl, runFnName = 'run', concurrency = 
           window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
           announceProgress(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
           jobTab.close();
-          await new Promise(res => setTimeout(res, 1500));
+          await new Promise(res => setTimeout(res, 1500 + Math.random() * 1000));
+          break;
         } catch (e) {
+          attempts++;
+          if (attempts < 3) {
+            await new Promise(res => setTimeout(res, 1000 + Math.random() * 1000));
+            continue;
+          }
           failed++;
           logError(e, { board, job: link });
           window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
           announceProgress(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
-          showRecoveryModal(e, () => fullAutoApply(board, searchUrl, runFnName), () => {}, () => {});
+          showRecoveryModal(e, () => retryQueue.push(link), () => {}, () => {});
         }
-      }));
-      i += concurrency;
-    }
-    const nextBtn = document.querySelector('a[aria-label*="Next"], a[rel="next"], .pagination-next, .next-page');
-    nextPageUrl = nextBtn ? nextBtn.href : null;
-    pageCount++;
+      }
+    }));
+    i += concurrency;
   }
   showUwUToast(`Full auto-apply complete: ${applied} succeeded, ${failed} failed.`, failed ? 'error' : 'success');
+  showCelebration();
 }
 // Accessibility announcement for progress
 function announceProgress(msg) {
