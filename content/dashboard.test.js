@@ -106,4 +106,35 @@ describe('Captcha Modal Accessibility', () => {
     resumeBtn.click();
     expect(document.querySelector('.uwu-captcha-modal')).toBeNull();
   });
+});
+
+describe('Accessibility Refinements', () => {
+  it('should have a skip link to main dashboard content', () => {
+    const skip = document.querySelector('.skip-link');
+    expect(skip).toBeInTheDocument();
+    expect(skip).toHaveAttribute('href', '#uwu-dashboard-main');
+  });
+  it('should add ARIA labels to all interactive elements', () => {
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(btn => {
+      expect(btn).toHaveAttribute('aria-label');
+    });
+  });
+  it('should announce modals and notifications to screen readers', () => {
+    const modal = document.createElement('div');
+    modal.setAttribute('role', 'dialog');
+    document.body.appendChild(modal);
+    expect(modal).toHaveAttribute('aria-live', 'assertive');
+    modal.remove();
+  });
+  it('should trigger delight features with keyboard shortcuts', () => {
+    const confettiSpy = jest.spyOn(window, 'showConfettiBurst');
+    const bounceSpy = jest.spyOn(window, 'bounceUwUFace');
+    window.dispatchEvent(new KeyboardEvent('keydown', { ctrlKey: true, key: 'k' }));
+    window.dispatchEvent(new KeyboardEvent('keydown', { ctrlKey: true, key: 'b' }));
+    expect(confettiSpy).toHaveBeenCalled();
+    expect(bounceSpy).toHaveBeenCalled();
+    confettiSpy.mockRestore();
+    bounceSpy.mockRestore();
+  });
 }); 

@@ -559,4 +559,32 @@
         return '';
     }
   }
-})(); 
+})();
+
+// Accessibility refinements
+// Add skip links
+const skipToMain = document.createElement('a');
+skipToMain.href = '#uwu-dashboard-main';
+skipToMain.className = 'skip-link';
+skipToMain.textContent = 'Skip to main dashboard content';
+skipToMain.setAttribute('tabindex', '0');
+document.body.insertBefore(skipToMain, document.body.firstChild);
+// Improve ARIA labeling for all interactive elements
+const allButtons = document.querySelectorAll('button, [role="tab"], [role="dialog"]');
+allButtons.forEach(btn => {
+  if (!btn.getAttribute('aria-label')) {
+    btn.setAttribute('aria-label', btn.textContent.trim() || btn.id || 'button');
+  }
+});
+// Ensure all modals and notifications are announced
+const observer = new MutationObserver(() => {
+  document.querySelectorAll('[role="dialog"], [role="alertdialog"], .uwu-toast').forEach(el => {
+    el.setAttribute('aria-live', 'assertive');
+  });
+});
+observer.observe(document.body, { childList: true, subtree: true });
+// Keyboard shortcuts for delight features
+window.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 'k') showConfettiBurst();
+  if (e.ctrlKey && e.key === 'b') bounceUwUFace();
+}); 
