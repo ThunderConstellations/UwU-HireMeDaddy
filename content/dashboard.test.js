@@ -85,4 +85,25 @@ describe('UwU-HireMeDaddy Dashboard Accessibility', () => {
     fireEvent.keyDown(maximizeBtn, { key: ' ' });
     expect(maximizeBtn).toHaveFocus();
   });
+});
+
+describe('Captcha Modal Accessibility', () => {
+  it('should show modal with role alertdialog and trap focus', () => {
+    showCaptchaModal();
+    const modal = document.querySelector('.uwu-captcha-modal');
+    expect(modal).toHaveAttribute('role', 'alertdialog');
+    expect(modal).toHaveAttribute('aria-modal', 'true');
+    const resumeBtn = modal.querySelector('#uwu-resume-btn');
+    expect(document.activeElement).toBe(resumeBtn);
+    // Simulate Tab key
+    resumeBtn.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }));
+    expect(document.activeElement).toBe(resumeBtn);
+  });
+  it('should remove modal and resume automation on button click', () => {
+    showCaptchaModal();
+    const modal = document.querySelector('.uwu-captcha-modal');
+    const resumeBtn = modal.querySelector('#uwu-resume-btn');
+    resumeBtn.click();
+    expect(document.querySelector('.uwu-captcha-modal')).toBeNull();
+  });
 }); 

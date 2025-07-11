@@ -143,3 +143,33 @@ function detectCaptcha(form) {
     throw new Error('Captcha detected');
   }
 }
+
+function showCaptchaModal() {
+  const modal = document.createElement('div');
+  modal.className = 'uwu-captcha-modal';
+  modal.setAttribute('role', 'alertdialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('tabindex', '0');
+  modal.innerHTML = `
+    <div class='uwu-captcha-modal-content'>
+      <h2>Captcha Detected</h2>
+      <p>Automation is paused. Please solve the captcha to continue.</p>
+      <button id='uwu-resume-btn'>Resume Automation</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  const resumeBtn = modal.querySelector('#uwu-resume-btn');
+  resumeBtn.focus();
+  resumeBtn.onclick = () => {
+    modal.remove();
+    showUwUToast('Automation resumed!', 'success');
+    // Resume logic can be triggered here
+  };
+  // Trap focus in modal
+  modal.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      resumeBtn.focus();
+    }
+  });
+}
