@@ -406,37 +406,6 @@
       setTimeout(() => conf.remove(), 1400);
     }
   }
-  // Playful micro-interactions
-  function showConfettiBurst() {
-    // Simple confetti burst animation (inspired by open-source confetti.js)
-    const confetti = document.createElement('div');
-    confetti.className = 'uwu-confetti-burst';
-    for (let i = 0; i < 30; i++) {
-      const piece = document.createElement('div');
-      piece.className = 'uwu-confetti-piece';
-      piece.style.left = Math.random() * 100 + '%';
-      piece.style.animationDelay = (Math.random() * 0.5) + 's';
-      confetti.appendChild(piece);
-    }
-    document.body.appendChild(confetti);
-    setTimeout(() => confetti.remove(), 2000);
-  }
-  function bounceUwUFace() {
-    const face = document.querySelector('.uwu-face');
-    if (face) {
-      face.classList.add('uwu-bounce');
-      setTimeout(() => face.classList.remove('uwu-bounce'), 1000);
-    }
-  }
-  // ARIA live region for delight messages
-  const delightRegion = document.createElement('div');
-  delightRegion.id = 'uwu-delight-region';
-  delightRegion.setAttribute('aria-live', 'polite');
-  delightRegion.className = 'visually-hidden';
-  document.body.appendChild(delightRegion);
-  function showDelightMessage(msg) {
-    delightRegion.textContent = msg;
-  }
   // Konami code Easter egg
   let konamiBuffer = [];
   const konamiCode = [
@@ -535,14 +504,15 @@
 
   // Auto-Apply logic
   function startAutoApply(boards, title, location, filters) {
-    // For each board, open a new tab and inject search/apply logic
     boards.forEach(board => {
       const url = getBoardSearchUrl(board, title, location, filters);
-      window.open(url, '_blank');
-      // In content script for each board, detect jobs and auto-apply
-      // Progress and errors are logged and shown in dashboard
+      // Open the search page and inject orchestrator
+      const searchTab = window.open(url, '_blank');
+      searchTab.onload = () => {
+        searchTab.eval(`import('/content/core.js').then(m => m.fullAutoApply('${board}', '${url}'))`);
+      };
     });
-    showUwUToast('Auto-Apply started! Check new tabs.', 'success');
+    showUwUToast('Full Auto-Apply started! Check new tabs for progress.', 'success');
   }
   function getBoardSearchUrl(board, title, location, filters) {
     // Return search URL for each board
@@ -559,64 +529,4 @@
         return '';
     }
   }
-
-  // Virtualized list for history and error logs (inspired by react-window)
-  function renderVirtualizedList(container, items, renderItem, itemHeight = 48, visibleCount = 10) {
-    container.innerHTML = '';
-    const totalHeight = items.length * itemHeight;
-    const viewport = document.createElement('div');
-    viewport.style.height = (visibleCount * itemHeight) + 'px';
-    viewport.style.overflowY = 'auto';
-    viewport.setAttribute('tabindex', '0');
-    viewport.setAttribute('aria-label', 'Virtualized list');
-    const inner = document.createElement('div');
-    inner.style.height = totalHeight + 'px';
-    viewport.appendChild(inner);
-    container.appendChild(viewport);
-    function renderVisible() {
-      const scrollTop = viewport.scrollTop;
-      const start = Math.floor(scrollTop / itemHeight);
-      const end = Math.min(items.length, start + visibleCount + 2);
-      inner.innerHTML = '';
-      for (let i = start; i < end; i++) {
-        const el = renderItem(items[i], i);
-        el.style.position = 'absolute';
-        el.style.top = (i * itemHeight) + 'px';
-        el.style.left = 0;
-        el.style.right = 0;
-        inner.appendChild(el);
-      }
-    }
-    viewport.addEventListener('scroll', renderVisible);
-    renderVisible();
-  }
-  // Use renderVirtualizedList for history and error logs
-})();
-
-// Accessibility refinements
-// Add skip links
-const skipToMain = document.createElement('a');
-skipToMain.href = '#uwu-dashboard-main';
-skipToMain.className = 'skip-link';
-skipToMain.textContent = 'Skip to main dashboard content';
-skipToMain.setAttribute('tabindex', '0');
-document.body.insertBefore(skipToMain, document.body.firstChild);
-// Improve ARIA labeling for all interactive elements
-const allButtons = document.querySelectorAll('button, [role="tab"], [role="dialog"]');
-allButtons.forEach(btn => {
-  if (!btn.getAttribute('aria-label')) {
-    btn.setAttribute('aria-label', btn.textContent.trim() || btn.id || 'button');
-  }
-});
-// Ensure all modals and notifications are announced
-const observer = new MutationObserver(() => {
-  document.querySelectorAll('[role="dialog"], [role="alertdialog"], .uwu-toast').forEach(el => {
-    el.setAttribute('aria-live', 'assertive');
-  });
-});
-observer.observe(document.body, { childList: true, subtree: true });
-// Keyboard shortcuts for delight features
-window.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key === 'k') showConfettiBurst();
-  if (e.ctrlKey && e.key === 'b') bounceUwUFace();
-}); 
+})(); 
