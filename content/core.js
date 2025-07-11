@@ -174,44 +174,58 @@ function showCaptchaModal() {
   });
 }
 
-// Enhanced Full Auto-Applier Orchestrator with pagination and anti-bot handling
-async function fullAutoApply(board, searchUrl, runFnName = 'run') {
+// Optimized Full Auto-Applier Orchestrator with concurrency
+async function fullAutoApply(board, searchUrl, runFnName = 'run', concurrency = 3) {
   let applied = 0, failed = 0, total = 0;
   let nextPageUrl = searchUrl;
   let pageCount = 0;
-  while (nextPageUrl && pageCount < 10) { // Limit to 10 pages for safety
+  while (nextPageUrl && pageCount < 10) {
     window.location.href = nextPageUrl;
-    await new Promise(res => setTimeout(res, 2500)); // Wait for page load
-    // Parse job links on this page
+    await new Promise(res => setTimeout(res, 2500));
     const jobLinks = Array.from(document.querySelectorAll('a[href*="/jobs/"]')).map(a => a.href);
     total += jobLinks.length;
-    for (let i = 0; i < jobLinks.length; i++) {
-      try {
-        // Open each job posting in a new tab
-        const jobTab = window.open(jobLinks[i], '_blank');
-        await new Promise(res => setTimeout(res, 2000));
-        // Anti-bot/captcha detection
-        if (jobTab.document.body.innerText.match(/captcha|robot|verify/i)) {
-          showCaptchaModal();
-          throw new Error('Anti-bot detected');
+    let i = 0;
+    while (i < jobLinks.length) {
+      const batch = jobLinks.slice(i, i + concurrency);
+      await Promise.all(batch.map(async (link) => {
+        try {
+          const jobTab = window.open(link, '_blank');
+          await new Promise(res => setTimeout(res, 2000));
+          if (jobTab.document.body.innerText.match(/captcha|robot|verify/i)) {
+            showCaptchaModal();
+            throw new Error('Anti-bot detected');
+          }
+          jobTab.eval(`import('/content/sites/site_${board}.js').then(m => m.${runFnName}())`);
+          applied++;
+          window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
+          announceProgress(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
+          jobTab.close();
+          await new Promise(res => setTimeout(res, 1500));
+        } catch (e) {
+          failed++;
+          logError(e, { board, job: link });
+          window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
+          announceProgress(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
+          showRecoveryModal(e, () => fullAutoApply(board, searchUrl, runFnName), () => {}, () => {});
         }
-        // Inject and call the board's run() function
-        jobTab.eval(`import('/content/sites/site_${board}.js').then(m => m.${runFnName}())`);
-        applied++;
-        window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
-        jobTab.close();
-        await new Promise(res => setTimeout(res, 1500)); // Rate limit
-      } catch (e) {
-        failed++;
-        logError(e, { board, job: jobLinks[i] });
-        window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
-        showRecoveryModal(e, () => fullAutoApply(board, searchUrl, runFnName), () => {}, () => {});
-      }
+      }));
+      i += concurrency;
     }
-    // Pagination: look for next page link
     const nextBtn = document.querySelector('a[aria-label*="Next"], a[rel="next"], .pagination-next, .next-page');
     nextPageUrl = nextBtn ? nextBtn.href : null;
     pageCount++;
   }
   showUwUToast(`Full auto-apply complete: ${applied} succeeded, ${failed} failed.`, failed ? 'error' : 'success');
+}
+// Accessibility announcement for progress
+function announceProgress(msg) {
+  let region = document.getElementById('uwu-auto-apply-aria-progress');
+  if (!region) {
+    region = document.createElement('div');
+    region.id = 'uwu-auto-apply-aria-progress';
+    region.setAttribute('aria-live', 'polite');
+    region.className = 'visually-hidden';
+    document.body.appendChild(region);
+  }
+  region.textContent = msg;
 }
