@@ -132,4 +132,45 @@ describe('Full Auto-Applier Integration', () => {
     } catch {}
     expect(window.showRecoveryModal).toHaveBeenCalled();
   });
+});
+
+describe('Full Auto-Applier Advanced Integration', () => {
+  it('should handle pagination and apply to jobs on multiple pages', () => {
+    let page = 0;
+    window.location = { href: '' };
+    document.querySelectorAll = jest.fn((sel) => {
+      if (sel.includes('/jobs/')) {
+        return [
+          { href: `https://site.com/jobs/${page * 2 + 1}` },
+          { href: `https://site.com/jobs/${page * 2 + 2}` }
+        ];
+      }
+      if (sel.includes('Next')) {
+        return page < 2 ? [{ href: `https://site.com/jobs?page=${++page}` }] : [];
+      }
+      return [];
+    });
+    window.open = jest.fn(() => ({
+      document: { body: { innerText: '' } },
+      eval: jest.fn(),
+      close: jest.fn()
+    }));
+    window.updateDashboardAutoApplyProgress = jest.fn();
+    window.showRecoveryModal = jest.fn();
+    fullAutoApply('linkedin', 'https://site.com/jobs', 'run');
+    expect(window.open).toHaveBeenCalledTimes(6); // 3 pages x 2 jobs
+  });
+  it('should detect anti-bot/captcha and show recovery modal', () => {
+    document.querySelectorAll = jest.fn(() => [{ href: 'https://site.com/jobs/1' }]);
+    window.open = jest.fn(() => ({
+      document: { body: { innerText: 'captcha' } },
+      eval: jest.fn(),
+      close: jest.fn()
+    }));
+    window.showCaptchaModal = jest.fn();
+    window.showRecoveryModal = jest.fn();
+    fullAutoApply('linkedin', 'https://site.com/jobs', 'run');
+    expect(window.showCaptchaModal).toHaveBeenCalled();
+    expect(window.showRecoveryModal).toHaveBeenCalled();
+  });
 }); 
