@@ -173,3 +173,38 @@ function showCaptchaModal() {
     }
   });
 }
+
+function showRecoveryModal(error, onRetry, onSkip, onAbort) {
+  const modal = document.createElement('div');
+  modal.className = 'uwu-recovery-modal';
+  modal.setAttribute('role', 'alertdialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('tabindex', '0');
+  modal.innerHTML = `
+    <div class='uwu-recovery-modal-content'>
+      <h2>Automation Interrupted</h2>
+      <p>${error ? error.message : 'An unexpected error occurred.'}</p>
+      <button id='uwu-retry-btn'>Retry</button>
+      <button id='uwu-skip-btn'>Skip</button>
+      <button id='uwu-abort-btn'>Abort</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  const retryBtn = modal.querySelector('#uwu-retry-btn');
+  const skipBtn = modal.querySelector('#uwu-skip-btn');
+  const abortBtn = modal.querySelector('#uwu-abort-btn');
+  retryBtn.focus();
+  retryBtn.onclick = () => { modal.remove(); if (onRetry) onRetry(); };
+  skipBtn.onclick = () => { modal.remove(); if (onSkip) onSkip(); };
+  abortBtn.onclick = () => { modal.remove(); if (onAbort) onAbort(); };
+  // Trap focus in modal
+  modal.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (document.activeElement === retryBtn) skipBtn.focus();
+      else if (document.activeElement === skipBtn) abortBtn.focus();
+      else retryBtn.focus();
+    }
+  });
+}
+// Call showRecoveryModal() in error handling paths

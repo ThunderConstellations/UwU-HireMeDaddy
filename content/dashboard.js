@@ -406,6 +406,37 @@
       setTimeout(() => conf.remove(), 1400);
     }
   }
+  // Playful micro-interactions
+  function showConfettiBurst() {
+    // Simple confetti burst animation (inspired by open-source confetti.js)
+    const confetti = document.createElement('div');
+    confetti.className = 'uwu-confetti-burst';
+    for (let i = 0; i < 30; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'uwu-confetti-piece';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.animationDelay = (Math.random() * 0.5) + 's';
+      confetti.appendChild(piece);
+    }
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 2000);
+  }
+  function bounceUwUFace() {
+    const face = document.querySelector('.uwu-face');
+    if (face) {
+      face.classList.add('uwu-bounce');
+      setTimeout(() => face.classList.remove('uwu-bounce'), 1000);
+    }
+  }
+  // ARIA live region for delight messages
+  const delightRegion = document.createElement('div');
+  delightRegion.id = 'uwu-delight-region';
+  delightRegion.setAttribute('aria-live', 'polite');
+  delightRegion.className = 'visually-hidden';
+  document.body.appendChild(delightRegion);
+  function showDelightMessage(msg) {
+    delightRegion.textContent = msg;
+  }
   // Konami code Easter egg
   let konamiBuffer = [];
   const konamiCode = [
