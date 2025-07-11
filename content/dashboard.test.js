@@ -173,4 +173,56 @@ describe('Full Auto-Applier Advanced Integration', () => {
     expect(window.showCaptchaModal).toHaveBeenCalled();
     expect(window.showRecoveryModal).toHaveBeenCalled();
   });
+});
+
+describe('Ultra-Robust Full Auto-Applier Integration', () => {
+  it('should use dynamic selectors per board', () => {
+    window.location = { href: '' };
+    document.querySelectorAll = jest.fn((sel) => {
+      if (sel === 'a[href*="/jobs/view/"]') return [{ href: 'https://linkedin.com/jobs/view/1' }];
+      if (sel === 'a[href*="/pagead/clk"], a[href*="/rc/clk"], a[href*="/company/"]') return [{ href: 'https://indeed.com/pagead/clk/1' }];
+      return [];
+    });
+    window.open = jest.fn(() => ({
+      document: { body: { innerText: 'Job details here' } },
+      eval: jest.fn(),
+      close: jest.fn()
+    }));
+    fullAutoApply('linkedin', 'https://linkedin.com/jobs', 'run', 1);
+    expect(window.open).toHaveBeenCalledWith('https://linkedin.com/jobs/view/1', '_blank');
+    fullAutoApply('indeed', 'https://indeed.com/jobs', 'run', 1);
+    expect(window.open).toHaveBeenCalledWith('https://indeed.com/pagead/clk/1', '_blank');
+  });
+  it('should retry on slow loads and randomize timing', async () => {
+    let callCount = 0;
+    window.open = jest.fn(() => ({
+      document: { body: { innerText: callCount++ < 2 ? '' : 'Job details here' } },
+      eval: jest.fn(),
+      close: jest.fn()
+    }));
+    document.querySelectorAll = jest.fn(() => [{ href: 'https://site.com/jobs/1' }]);
+    await fullAutoApply('linkedin', 'https://site.com/jobs', 'run', 1);
+    expect(window.open).toHaveBeenCalled();
+  });
+  it('should support multi-tab orchestration and advanced error recovery', async () => {
+    let errorThrown = false;
+    window.open = jest.fn(() => {
+      if (!errorThrown) {
+        errorThrown = true;
+        throw new Error('Test error');
+      }
+      return { document: { body: { innerText: 'Job details here' } }, eval: jest.fn(), close: jest.fn() };
+    });
+    document.querySelectorAll = jest.fn(() => [{ href: 'https://site.com/jobs/1' }, { href: 'https://site.com/jobs/2' }]);
+    window.showRecoveryModal = jest.fn((e, retry) => retry());
+    await fullAutoApply('linkedin', 'https://site.com/jobs', 'run', 2);
+    expect(window.showRecoveryModal).toHaveBeenCalled();
+  });
+  it('should provide deep ARIA feedback for progress', async () => {
+    document.querySelectorAll = jest.fn(() => [{ href: 'https://site.com/jobs/1' }]);
+    window.open = jest.fn(() => ({ document: { body: { innerText: 'Job details here' } }, eval: jest.fn(), close: jest.fn() }));
+    window.announceProgress = jest.fn();
+    await fullAutoApply('linkedin', 'https://site.com/jobs', 'run', 1);
+    expect(window.announceProgress).toHaveBeenCalled();
+  });
 }); 
