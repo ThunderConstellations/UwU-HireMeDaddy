@@ -1,0 +1,23 @@
+{
+  "name": "uwu-hiremedaddy",
+  "version": "2.0.0",
+  "description": "Automated job application userscript/extension with accessible, animated UI and robust logging.",
+  "main": "background.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "UwU-HireMeDaddy Team",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@testing-library/dom": "^9.3.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "msw": "^2.2.2"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["@testing-library/jest-dom/extend-expect"]
+  }
+}
+// Inspired by github.com/testing-library, github.com/mswjs/msw, and open-source browser extension test setups 

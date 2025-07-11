@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UwU‑HireMeDaddy</title>
     <style>
       body {
@@ -36,21 +37,53 @@
     </style>
   </head>
   <body>
-    <h1>⚡ UwU‑HireMeDaddy</h1>
+    <a href="#mainContent" class="skip-link" tabindex="0">Skip to content</a>
+    <div class="uwu-container">
+      <svg class="uwu-lightning-border" viewBox="0 0 320 420" width="100%" height="100%" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;">
+        <polyline points="10,10 60,30 30,80 90,120 60,180 120,210 100,270 170,320 140,390 310,410" fill="none" stroke="#ffd700" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="uwu-lightning-path"/>
+      </svg>
+      <h1 id="mainContent" tabindex="-1" title="UwU! Thank you for being awesome!">⚡ UwU‑HireMeDaddy</h1>
 
-    <label for="apiKeyInput">🔐 OpenRouter API Key</label>
-    <input id="apiKeyInput" type="password" placeholder="Enter your API key" />
-    <button id="saveApiKeyBtn">💾 Save API Key</button>
-    <p id="apiKeyStatus"></p>
+      <label for="apiKeyInput">🔐 OpenRouter API Key</label>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <input id="apiKeyInput" type="password" placeholder="Enter your API key" aria-label="OpenRouter API Key" style="flex:1;" />
+        <button id="copyApiKeyBtn" aria-label="Copy API Key" type="button">📋 <span class='uwu-bolt' aria-hidden='true'>⚡</span></button>
+      </div>
+      <button id="saveApiKeyBtn" aria-label="Save API Key">💾 Save API Key <span class='uwu-bolt' aria-hidden='true'>⚡</span></button>
+      <p id="apiKeyStatus" aria-live="polite"></p>
 
-    <hr />
+      <label for="resumeSelect">📄 Select Resume</label>
+      <select id="resumeSelect" aria-label="Select Resume">
+        <option value="resume.pdf">resume.pdf</option>
+        <!-- More options will be added dynamically -->
+      </select>
+      <label for="resumeUploadInput">Upload New Resume (PDF)</label>
+      <input type="file" id="resumeUploadInput" accept="application/pdf" style="display:block;margin:8px 0;" title="Select a PDF resume to upload" aria-label="Upload New Resume" />
+      <button id="uploadResumeBtn" aria-label="Upload New Resume">Upload New Resume <span class='uwu-bolt' aria-hidden='true'>⚡</span></button>
+      <small>Only PDF files supported.</small>
 
-    <button id="applyBtn">🔥 Start Auto Apply</button>
-    <p style="font-size: 11px; margin-top: 6px;">
-      Need help? Visit
-      <a href="https://rainfury4u.github.io" target="_blank">your portfolio</a>.
-    </p>
+      <label>🛠️ Enable Job Boards</label>
+      <div role="group" aria-label="Enable Job Boards">
+        <input type="checkbox" id="toggleLinkedIn" checked /> <label for="toggleLinkedIn">LinkedIn</label><br />
+        <input type="checkbox" id="toggleIndeed" checked /> <label for="toggleIndeed">Indeed</label><br />
+        <input type="checkbox" id="toggleMonster" checked /> <label for="toggleMonster">Monster</label><br />
+        <input type="checkbox" id="toggleGlassdoor" checked /> <label for="toggleGlassdoor">Glassdoor</label>
+      </div>
 
+      <hr />
+
+      <button id="showHistoryBtn" aria-label="Show Application History">📜 Show Application History <span class='uwu-bolt' aria-hidden='true'>⚡</span></button>
+      <button id="showErrorLogBtn" aria-label="Show Error Log">❗ Show Error Log <span class='uwu-bolt' aria-hidden='true'>⚡</span></button>
+      <ul id="history-list" aria-live="polite" aria-label="Application and Error Log"></ul>
+
+      <button id="applyBtn" aria-label="Start Auto Apply">🔥 Start Auto Apply <span class='uwu-bolt' aria-hidden='true'>⚡</span></button>
+      <p style="font-size: 11px; margin-top: 6px;">
+        Need help? Visit
+        <a href="https://rainfury4u.github.io" target="_blank" rel="noopener">your portfolio</a>.
+      </p>
+      <div class="uwu-thankyou" aria-live="polite">Thank you for using UwU-HireMeDaddy! ✨<span class="visually-hidden">You’re awesome!</span></div>
+      <div id="uwu-toast-container" aria-live="polite"></div>
+    </div>
     <script type="module" src="./popup.js"></script>
   </body>
 </html>

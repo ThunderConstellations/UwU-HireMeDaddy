@@ -1,0 +1,146 @@
+#uwu-dashboard-btn {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 10000;
+  background: #18120a;
+  color: #ffd700;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 16px #ffd70044, 0 0 0 4px #ffd70022;
+  cursor: pointer;
+  font-size: 2em;
+  border: 2px solid #ffd700;
+  transition: box-shadow 0.2s, transform 0.2s;
+  animation: uwu-btn-pulse 2.5s infinite alternate;
+  outline: none;
+}
+#uwu-dashboard-btn:focus, #uwu-dashboard-btn:hover {
+  box-shadow: 0 4px 32px #ffd700cc, 0 0 0 8px #fffbe633;
+  transform: scale(1.08) rotate(-2deg);
+}
+.uwu-btn-lightning {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px #ffd700cc);
+  animation: uwu-btn-lightning-flash 2.5s infinite;
+}
+@keyframes uwu-btn-pulse {
+  0% { box-shadow: 0 2px 16px #ffd70044, 0 0 0 4px #ffd70022; }
+  100% { box-shadow: 0 4px 32px #ffd700cc, 0 0 0 8px #fffbe633; }
+}
+@keyframes uwu-btn-lightning-flash {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px #ffd700cc); }
+  10% { opacity: 0.7; filter: drop-shadow(0 0 24px #fffbe6); }
+  20% { opacity: 1; filter: drop-shadow(0 0 16px #ffd700); }
+  50% { opacity: 0.8; filter: drop-shadow(0 0 32px #fffbe6); }
+  80% { opacity: 1; filter: drop-shadow(0 0 8px #ffd700cc); }
+}
+.uwu-face {
+  font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+  font-size: 1.1em;
+  margin-right: 2px;
+  animation: uwu-face-bounce 2.2s infinite alternate;
+}
+@keyframes uwu-face-bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px) scale(1.08); }
+}
+#uwu-dashboard-overlay {
+  position: fixed;
+  left: 0; bottom: 0;
+  width: 420px;
+  max-width: 98vw;
+  height: 100vh;
+  background: #18120a;
+  color: #ffd700;
+  z-index: 10001;
+  box-shadow: 0 0 32px #ffd70099, 0 0 0 8px #fffbe633;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+  display: none;
+  flex-direction: column;
+  animation: uwu-dashboard-in 0.5s cubic-bezier(.68,-0.55,.27,1.55) 1;
+  outline: none;
+}
+@keyframes uwu-dashboard-in {
+  0% { transform: translateX(-100%) scale(0.98); opacity: 0; }
+  80% { transform: translateX(12px) scale(1.04); opacity: 1; }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+#uwu-dashboard-overlay.uwu-dashboard-maximized {
+  width: 98vw;
+  height: 98vh;
+  left: 1vw;
+  bottom: 1vh;
+  border-radius: 18px;
+  box-shadow: 0 0 64px #ffd700cc, 0 0 0 12px #fffbe633;
+  animation: uwu-dashboard-maximize-in 0.5s cubic-bezier(.68,-0.55,.27,1.55) 1;
+}
+@keyframes uwu-dashboard-maximize-in {
+  0% { transform: scale(0.98); opacity: 0.7; }
+  80% { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+#uwu-dashboard-maximize:focus, #uwu-dashboard-maximize:hover {
+  background: #ffd70033;
+  outline: 2px solid #ffd700;
+}
+.uwu-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.2em;
+  font-weight: bold;
+  background: linear-gradient(90deg, #ffd70022 0%, #18120a 100%);
+  padding: 18px 18px 12px 18px;
+  border-top-right-radius: 18px;
+}
+.uwu-dashboard-header .uwu-face {
+  margin-right: 8px;
+  font-size: 1.3em;
+}
+#uwu-dashboard-close {
+  background: none;
+  border: none;
+  color: #ffd700;
+  font-size: 1.3em;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px 10px;
+  transition: background 0.2s;
+}
+#uwu-dashboard-close:hover, #uwu-dashboard-close:focus {
+  background: #ffd70033;
+  outline: 2px solid #ffd700;
+}
+.uwu-dashboard-content {
+  flex: 1;
+  padding: 18px;
+  overflow-y: auto;
+  font-size: 1.08em;
+}
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+// Inspired by github.com/AriTheElk/DraculaHub, github.com/ZigaoWang/daztab-old, github.com/WhatSock/visual-aria 

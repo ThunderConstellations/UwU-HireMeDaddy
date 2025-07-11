@@ -1,25 +1,70 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Segoe UI', 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
   margin: 12px;
-  background: #0d0d0d;
-  color: #fff7ea;
+  background: #18120a;
+  color: #ffd700;
 }
 
 h1 {
-  font-size: 1.2em;
+  font-size: 1.3em;
   margin-bottom: 10px;
-  color: #ffd479;
+  color: #ffd700;
+  text-shadow: 0 0 8px #ffd70099, 0 0 2px #fff;
+  font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: visible;
+  animation: uwu-shimmer 2.5s linear infinite;
 }
 
 button {
-  padding: 6px 12px;
-  background: #ffd479;
+  padding: 8px 14px;
+  background: linear-gradient(90deg, #ffd700 60%, #ffec8b 100%);
   border: none;
-  border-radius: 6px;
-  color: black;
+  border-radius: 10px;
+  color: #18120a;
   font-weight: bold;
   margin-bottom: 10px;
   cursor: pointer;
+  box-shadow: 0 2px 8px #ffd70033;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+  font-size: 1em;
+  position: relative;
+  overflow: visible;
+}
+
+button:hover {
+  background: linear-gradient(90deg, #ffec8b 60%, #ffd700 100%);
+  box-shadow: 0 4px 16px #ffd70066;
+  transform: scale(1.04) rotate(-2deg);
+}
+
+section {
+  margin-bottom: 18px;
+}
+
+#resumeSelect, #resumeUploadInput {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 1.5px solid #ffd700;
+  background: #221a10;
+  color: #ffd700;
+  font-size: 1em;
+  box-shadow: 0 0 6px #ffd70022;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+#resumeSelect:focus, #resumeUploadInput:focus {
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 12px #ffd70066;
+}
+
+#uploadResumeBtn {
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 1em;
 }
 
 #history-list {
@@ -27,9 +72,487 @@ button {
   padding: 0;
   max-height: 200px;
   overflow-y: auto;
+  background: #221a10;
+  border-radius: 10px;
+  border: 1.5px solid #ffd700;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0 0 8px #ffd70022;
 }
 
 #history-list li {
-  border-bottom: 1px solid #444;
-  padding: 6px 0;
+  border-bottom: 1px solid #ffd70033;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #ffd700;
+  font-family: 'Segoe UI', 'Comic Sans MS', sans-serif;
+  background: #18120a;
+  border-radius: 6px;
+  margin: 4px 0;
+  box-shadow: 0 1px 4px #ffd70011;
+}
+
+#history-list li:last-child {
+  border-bottom: none;
+}
+
+label {
+  color: #ffd700;
+  font-weight: 600;
+  font-family: 'Segoe UI', 'Comic Sans MS', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+small {
+  color: #ffd700;
+  opacity: 0.8;
+  font-size: 0.95em;
+}
+
+input[type="checkbox"] {
+  accent-color: #ffd700;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  box-shadow: 0 0 4px #ffd70044;
+}
+
+input[type="checkbox"]:hover {
+  box-shadow: 0 0 8px #ffd70099;
+}
+
+input[type="password"] {
+  background: #221a10;
+  color: #ffd700;
+  border: 1.5px solid #ffd700;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 1em;
+  margin-bottom: 8px;
+  box-shadow: 0 0 6px #ffd70022;
+}
+
+input[type="password"]:focus {
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 12px #ffd70066;
+}
+
+#apiKeyStatus {
+  font-size: 12px;
+  color: #ffd700cc;
+  margin-top: -6px;
+  margin-bottom: 10px;
+  font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
+}
+
+/* UwU playful touch */
+h1::after {
+  content: ' UwU';
+  font-size: 0.9em;
+  color: #fffbe6;
+  margin-left: 6px;
+  text-shadow: 0 0 6px #ffd70099;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+button, #uploadResumeBtn {
+  font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 8px;
+  background: #ffd700;
+  color: #18120a;
+  padding: 8px 16px;
+  border-radius: 8px;
+  z-index: 1000;
+  font-weight: bold;
+  font-size: 1em;
+  box-shadow: 0 0 8px #ffd70099;
+  transition: left 0.2s, box-shadow 0.2s;
+}
+
+.skip-link:focus {
+  left: 12px;
+  outline: 3px solid #ffd700;
+  box-shadow: 0 0 16px #ffd700cc;
+}
+
+button:focus, #uploadResumeBtn:focus, input:focus, select:focus, #resumeSelect:focus, #resumeUploadInput:focus, input[type="checkbox"]:focus {
+  outline: 3px solid #ffd700;
+  box-shadow: 0 0 16px #ffd700cc, 0 0 4px #fffbe6;
+  z-index: 10;
+  animation: uwu-bounce 0.18s cubic-bezier(.68,-0.55,.27,1.55) 1;
+}
+
+@keyframes uwu-bounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08) rotate(-2deg); }
+  70% { transform: scale(0.97) rotate(1deg); }
+  100% { transform: scale(1); }
+}
+
+body::before {
+  content: 'UwU';
+  position: fixed;
+  bottom: 16px;
+  right: 24px;
+  font-size: 3.2em;
+  color: #ffd70022;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  letter-spacing: 0.1em;
+  animation: uwu-float 4s ease-in-out infinite alternate, uwu-wink 8s linear infinite;
+}
+
+@keyframes uwu-float {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.04); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes uwu-wink {
+  0%, 90%, 100% { content: 'UwU'; }
+  92%, 96% { content: 'UωU'; }
+}
+
+h1 {
+  /* ...existing styles... */
+  position: relative;
+  overflow: visible;
+  animation: uwu-shimmer 2.5s linear infinite;
+}
+
+@keyframes uwu-shimmer {
+  0% { text-shadow: 0 0 8px #ffd70099, 0 0 2px #fff; }
+  50% { text-shadow: 0 0 18px #ffd700cc, 0 0 8px #fffbe6; }
+  100% { text-shadow: 0 0 8px #ffd70099, 0 0 2px #fff; }
+}
+
+button:focus::after, button:hover::after, #uploadResumeBtn:focus::after, #uploadResumeBtn:hover::after {
+  content: '✨';
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  font-size: 1.2em;
+  animation: sparkle 0.7s linear;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0% { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+  30% { opacity: 1; transform: scale(1.2) rotate(10deg); }
+  60% { opacity: 1; transform: scale(1) rotate(-5deg); }
+  100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+}
+
+.uwu-container {
+  background: #18120a;
+  border-radius: 18px;
+  box-shadow: 0 0 0 3px #ffd700cc, 0 0 24px 4px #ffd70044, 0 0 0 8px #fffbe600;
+  padding: 18px 16px 32px 16px;
+  position: relative;
+  animation: uwu-border-glow 2.5s linear infinite, uwu-container-fadein 1.2s cubic-bezier(.68,-0.55,.27,1.55) 1;
+  z-index: 1;
+  overflow: hidden;
+}
+
+@keyframes uwu-border-glow {
+  0% { box-shadow: 0 0 0 3px #ffd700cc, 0 0 24px 4px #ffd70044, 0 0 0 8px #fffbe600; }
+  50% { box-shadow: 0 0 0 5px #ffd700ee, 0 0 36px 8px #ffd70077, 0 0 0 12px #fffbe633; }
+  100% { box-shadow: 0 0 0 3px #ffd700cc, 0 0 24px 4px #ffd70044, 0 0 0 8px #fffbe600; }
+}
+
+@keyframes uwu-container-fadein {
+  from { opacity: 0; transform: scale(0.96); box-shadow: 0 0 0 0 #ffd70000; }
+  to { opacity: 1; transform: scale(1); box-shadow: 0 0 0 3px #ffd700cc, 0 0 24px 4px #ffd70044, 0 0 0 8px #fffbe600; }
+}
+
+.uwu-thankyou {
+  color: #ffd700;
+  font-size: 1.08em;
+  text-align: center;
+  margin-top: 18px;
+  opacity: 0;
+  animation: uwu-fadein 1.6s 0.5s forwards, uwu-sparkle-shimmer 3.5s 2.2s infinite;
+  font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+  text-shadow: 0 0 8px #ffd70099;
+}
+
+@keyframes uwu-sparkle-shimmer {
+  0%, 100% { text-shadow: 0 0 8px #ffd70099; }
+  10% { text-shadow: 0 0 18px #ffd700cc, 0 0 8px #fffbe6; }
+  12% { text-shadow: 0 0 24px #fffbe6, 0 0 18px #ffd700cc; }
+  15% { text-shadow: 0 0 8px #ffd70099; }
+}
+
+.uwu-sparkle-burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 2.2em;
+  color: #ffd700;
+  opacity: 0;
+  animation: uwu-burst 0.7s cubic-bezier(.68,-0.55,.27,1.55) forwards;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+@keyframes uwu-burst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(-10deg); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+  60% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-5deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4) rotate(0deg); }
+}
+
+@keyframes uwu-fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+h1[title]:hover::after, h1[title]:focus::after {
+  content: attr(title);
+  position: absolute;
+  left: 50%;
+  top: 110%;
+  transform: translateX(-50%);
+  background: #ffd700ee;
+  color: #18120a;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 1em;
+  font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+  box-shadow: 0 2px 12px #ffd70077;
+  white-space: nowrap;
+  z-index: 100;
+  opacity: 1;
+  pointer-events: none;
+  animation: uwu-tooltip-fade 0.3s;
+}
+
+@keyframes uwu-tooltip-fade {
+  from { opacity: 0; transform: translateX(-50%) scale(0.95); }
+  to { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+#history-list::-webkit-scrollbar {
+  width: 10px;
+  background: #221a10;
+  border-radius: 8px;
+}
+#history-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #ffd700 60%, #ffec8b 100%);
+  border-radius: 8px;
+  box-shadow: 0 0 8px #ffd70099;
+  animation: uwu-scrollbar-shimmer 2.5s linear infinite;
+}
+
+@keyframes uwu-scrollbar-shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+#history-list {
+  scrollbar-color: #ffd700 #221a10;
+  scrollbar-width: thin;
+}
+
+.uwu-thankyou:hover, .uwu-thankyou:focus {
+  animation: uwu-pulse 1.2s infinite alternate;
+}
+
+@keyframes uwu-pulse {
+  0% { text-shadow: 0 0 8px #ffd70099; }
+  100% { text-shadow: 0 0 24px #ffd700cc, 0 0 12px #fffbe6; }
+}
+
+.uwu-thankyou:focus {
+  outline: 3px solid #ffd700;
+  box-shadow: 0 0 16px #ffd700cc, 0 0 4px #fffbe6;
+  z-index: 10;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  #history-list::-webkit-scrollbar-thumb {
+    box-shadow: none !important;
+  }
+}
+
+.uwu-lightning-border {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 0 8px #ffd700cc);
+}
+
+.uwu-lightning-path {
+  stroke: #ffd700;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 8px #ffd700cc);
+  stroke-dasharray: 12 8;
+  stroke-dashoffset: 0;
+  animation: uwu-lightning-flicker 1.2s infinite steps(2) alternate, uwu-lightning-dash 2.5s linear infinite;
+}
+
+@keyframes uwu-lightning-flicker {
+  0%, 100% { filter: drop-shadow(0 0 8px #ffd700cc); opacity: 1; }
+  10% { filter: drop-shadow(0 0 24px #fffbe6); opacity: 0.7; }
+  20% { filter: drop-shadow(0 0 16px #ffd700); opacity: 1; }
+  50% { filter: drop-shadow(0 0 32px #fffbe6); opacity: 0.8; }
+  80% { filter: drop-shadow(0 0 8px #ffd700cc); opacity: 1; }
+}
+
+@keyframes uwu-lightning-dash {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 40; }
+}
+
+.uwu-bolt {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 1.1em;
+  color: #ffd700;
+  filter: drop-shadow(0 0 4px #ffd700cc);
+  transition: filter 0.2s, transform 0.2s;
+}
+
+button:hover .uwu-bolt, button:focus .uwu-bolt {
+  animation: uwu-bolt-flash 0.4s, uwu-bolt-shake 0.3s;
+}
+
+@keyframes uwu-bolt-flash {
+  0% { filter: drop-shadow(0 0 4px #ffd700cc); }
+  30% { filter: drop-shadow(0 0 16px #fffbe6), drop-shadow(0 0 8px #ffd700); }
+  60% { filter: drop-shadow(0 0 24px #ffd700cc), drop-shadow(0 0 12px #fffbe6); }
+  100% { filter: drop-shadow(0 0 4px #ffd700cc); }
+}
+
+@keyframes uwu-bolt-shake {
+  0% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-15deg) scale(1.1); }
+  40% { transform: rotate(10deg) scale(1.05); }
+  60% { transform: rotate(-8deg) scale(1.1); }
+  80% { transform: rotate(6deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+#uwu-toast-container {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.uwu-toast {
+  background: linear-gradient(90deg, #18120a 60%, #ffd70022 100%);
+  color: #ffd700;
+  font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+  font-size: 1.08em;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #ffd70044;
+  padding: 12px 28px 12px 18px;
+  margin: 8px 0;
+  min-width: 220px;
+  max-width: 320px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(40px) scale(0.95);
+  animation: uwu-toast-in 0.5s cubic-bezier(.68,-0.55,.27,1.55) forwards, uwu-toast-pulse 2.2s 0.5s infinite alternate, uwu-toast-out 0.5s 3.5s forwards;
+  pointer-events: auto;
+}
+
+.uwu-toast .uwu-bolt {
+  font-size: 1.3em;
+  margin-left: 0;
+  margin-right: 4px;
+  animation: uwu-bolt-flash 0.7s;
+}
+
+.uwu-toast .uwu-face {
+  font-size: 1.2em;
+  margin-left: 4px;
+  margin-right: 0;
+  filter: drop-shadow(0 0 4px #ffd700cc);
+}
+
+@keyframes uwu-toast-in {
+  0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+  80% { opacity: 1; transform: translateY(-6px) scale(1.04); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes uwu-toast-pulse {
+  0% { box-shadow: 0 2px 16px #ffd70044; }
+  100% { box-shadow: 0 2px 32px #ffd700cc, 0 0 16px #fffbe6; }
+}
+@keyframes uwu-toast-out {
+  to { opacity: 0; transform: translateY(40px) scale(0.95); }
+}
+
+.uwu-log-entry {
+  position: relative;
+  background: #221a10;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px #ffd70033;
+  animation: uwu-log-in 0.7s cubic-bezier(.68,-0.55,.27,1.55) 1;
+  overflow: hidden;
+}
+
+.uwu-log-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #ffd700 60%, #ffec8b 100%);
+  color: #18120a;
+  font-weight: bold;
+  font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+  border-radius: 6px;
+  padding: 2px 10px;
+  margin-right: 8px;
+  margin-bottom: 2px;
+  font-size: 1em;
+  box-shadow: 0 0 8px #ffd70099;
+  animation: uwu-badge-pulse 1.2s 1;
+}
+
+@keyframes uwu-log-in {
+  0% { opacity: 0; transform: translateX(-40px) scale(0.95); box-shadow: 0 2px 24px #ffd700cc; }
+  80% { opacity: 1; transform: translateX(6px) scale(1.04); box-shadow: 0 2px 32px #ffd700cc; }
+  100% { opacity: 1; transform: translateX(0) scale(1); box-shadow: 0 2px 8px #ffd70033; }
+}
+
+@keyframes uwu-badge-pulse {
+  0% { box-shadow: 0 0 8px #ffd70099; }
+  50% { box-shadow: 0 0 24px #fffbe6, 0 0 16px #ffd700cc; }
+  100% { box-shadow: 0 0 8px #ffd70099; }
 }
