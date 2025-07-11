@@ -137,4 +137,32 @@ describe('Accessibility Refinements', () => {
     confettiSpy.mockRestore();
     bounceSpy.mockRestore();
   });
+});
+
+describe('Virtualized List', () => {
+  it('should only render visible items', () => {
+    const container = document.createElement('div');
+    const items = Array.from({ length: 100 }, (_, i) => `Item ${i}`);
+    const renderItem = (item, i) => {
+      const el = document.createElement('div');
+      el.textContent = item;
+      return el;
+    };
+    renderVirtualizedList(container, items, renderItem, 20, 5);
+    const viewport = container.querySelector('div[aria-label="Virtualized list"]');
+    expect(viewport).toBeInTheDocument();
+    // Should only render a subset of items
+    expect(viewport.querySelectorAll('div').length).toBeLessThan(items.length);
+  });
+  it('should be ARIA compliant', () => {
+    const container = document.createElement('div');
+    renderVirtualizedList(container, ['A', 'B'], (item) => {
+      const el = document.createElement('div');
+      el.textContent = item;
+      return el;
+    });
+    const viewport = container.querySelector('div[aria-label="Virtualized list"]');
+    expect(viewport).toHaveAttribute('tabindex', '0');
+    expect(viewport).toHaveAttribute('aria-label', 'Virtualized list');
+  });
 }); 
