@@ -1,33 +1,29 @@
-import { getApps } from "../utils/logger.js";
+const apiKeyInput = document.getElementById("apiKeyInput");
+const saveApiKeyBtn = document.getElementById("saveApiKeyBtn");
+const apiKeyStatus = document.getElementById("apiKeyStatus");
+const applyBtn = document.getElementById("applyBtn");
 
-async function loadHistory() {
-  const apps = await getApps();
-  const status = document.getElementById("status");
-  const list = document.getElementById("history-list");
-  if (apps.length === 0) {
-    status.innerText = "No applications yet!";
-    return;
+// Load saved API key on popup open
+chrome.storage.local.get(["openrouter_api_key"], (result) => {
+  if (result.openrouter_api_key) {
+    apiKeyInput.value = "••••••••";
+    apiKeyStatus.textContent = "✅ API key loaded securely.";
   }
-
-  status.innerText = `You've applied to ${apps.length} jobs so far.`;
-  list.innerHTML = apps.map(app =>
-    `<li><strong>${app.title}</strong> @ ${app.company} on ${new Date(app.ts).toLocaleDateString()} (${app.site})</li>`
-  ).join("");
-}
-
-document.getElementById("export").addEventListener("click", async () => {
-  const apps = await getApps();
-  const csv = [
-    "Date,Site,Title,Company,Status",
-    ...apps.map(a => `${new Date(a.ts).toLocaleDateString()},${a.site},${a.title},${a.company},${a.status}`)
-  ].join("\n");
-
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "application_history.csv";
-  a.click();
 });
 
-loadHistory();
+// Save the API key when button is clicked
+saveApiKeyBtn.addEventListener("click", async () => {
+  const key = apiKeyInput.value.trim();
+  if (key.length > 20) {
+    await chrome.storage.local.set({ openrouter_api_key: key });
+    apiKeyInput.value = "••••••••";
+    apiKeyStatus.textContent = "✅ API key saved securely.";
+  } else {
+    apiKeyStatus.textContent = "❌ Invalid API key.";
+  }
+});
+
+// For triggering auto-apply logic (optional placeholder)
+applyBtn.addEventListener("click", async () => {
+  alert("🚀 Auto-apply triggered! Forms will be filled on matching job boards.");
+});
