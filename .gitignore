@@ -13,4 +13,3 @@ coverage/
 # Ignore test output
 *.test.js.snap
 # Inspired by github/gitignore and best practices 
-userinput.py 
