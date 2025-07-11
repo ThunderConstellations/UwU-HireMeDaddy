@@ -174,37 +174,29 @@ function showCaptchaModal() {
   });
 }
 
-function showRecoveryModal(error, onRetry, onSkip, onAbort) {
-  const modal = document.createElement('div');
-  modal.className = 'uwu-recovery-modal';
-  modal.setAttribute('role', 'alertdialog');
-  modal.setAttribute('aria-modal', 'true');
-  modal.setAttribute('tabindex', '0');
-  modal.innerHTML = `
-    <div class='uwu-recovery-modal-content'>
-      <h2>Automation Interrupted</h2>
-      <p>${error ? error.message : 'An unexpected error occurred.'}</p>
-      <button id='uwu-retry-btn'>Retry</button>
-      <button id='uwu-skip-btn'>Skip</button>
-      <button id='uwu-abort-btn'>Abort</button>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  const retryBtn = modal.querySelector('#uwu-retry-btn');
-  const skipBtn = modal.querySelector('#uwu-skip-btn');
-  const abortBtn = modal.querySelector('#uwu-abort-btn');
-  retryBtn.focus();
-  retryBtn.onclick = () => { modal.remove(); if (onRetry) onRetry(); };
-  skipBtn.onclick = () => { modal.remove(); if (onSkip) onSkip(); };
-  abortBtn.onclick = () => { modal.remove(); if (onAbort) onAbort(); };
-  // Trap focus in modal
-  modal.addEventListener('keydown', e => {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      if (document.activeElement === retryBtn) skipBtn.focus();
-      else if (document.activeElement === skipBtn) abortBtn.focus();
-      else retryBtn.focus();
+// Full Auto-Applier Orchestrator
+async function fullAutoApply(board, searchUrl, runFnName = 'run') {
+  // 1. Parse all job links on the search results page
+  const jobLinks = Array.from(document.querySelectorAll('a[href*="/jobs/"]')).map(a => a.href);
+  let applied = 0, failed = 0;
+  for (let i = 0; i < jobLinks.length; i++) {
+    try {
+      // 2. Open each job posting in a new tab
+      const jobTab = window.open(jobLinks[i], '_blank');
+      // 3. Wait for job page to load and details to be available
+      await new Promise(res => setTimeout(res, 2000)); // Wait for tab to load
+      // 4. Inject and call the board's run() function
+      jobTab.eval(`import('/content/sites/site_${board}.js').then(m => m.${runFnName}())`);
+      applied++;
+      window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${jobLinks.length - i - 1}`);
+      jobTab.close();
+    } catch (e) {
+      failed++;
+      logError(e, { board, job: jobLinks[i] });
+      window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${jobLinks.length - i - 1}`);
+      // Show recovery modal if needed
+      showRecoveryModal(e, () => fullAutoApply(board, searchUrl, runFnName), () => {}, () => {});
     }
-  });
+  }
+  showUwUToast(`Full auto-apply complete: ${applied} succeeded, ${failed} failed.`, failed ? 'error' : 'success');
 }
-// Call showRecoveryModal() in error handling paths
