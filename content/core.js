@@ -174,29 +174,44 @@ function showCaptchaModal() {
   });
 }
 
-// Full Auto-Applier Orchestrator
+// Enhanced Full Auto-Applier Orchestrator with pagination and anti-bot handling
 async function fullAutoApply(board, searchUrl, runFnName = 'run') {
-  // 1. Parse all job links on the search results page
-  const jobLinks = Array.from(document.querySelectorAll('a[href*="/jobs/"]')).map(a => a.href);
-  let applied = 0, failed = 0;
-  for (let i = 0; i < jobLinks.length; i++) {
-    try {
-      // 2. Open each job posting in a new tab
-      const jobTab = window.open(jobLinks[i], '_blank');
-      // 3. Wait for job page to load and details to be available
-      await new Promise(res => setTimeout(res, 2000)); // Wait for tab to load
-      // 4. Inject and call the board's run() function
-      jobTab.eval(`import('/content/sites/site_${board}.js').then(m => m.${runFnName}())`);
-      applied++;
-      window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${jobLinks.length - i - 1}`);
-      jobTab.close();
-    } catch (e) {
-      failed++;
-      logError(e, { board, job: jobLinks[i] });
-      window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${jobLinks.length - i - 1}`);
-      // Show recovery modal if needed
-      showRecoveryModal(e, () => fullAutoApply(board, searchUrl, runFnName), () => {}, () => {});
+  let applied = 0, failed = 0, total = 0;
+  let nextPageUrl = searchUrl;
+  let pageCount = 0;
+  while (nextPageUrl && pageCount < 10) { // Limit to 10 pages for safety
+    window.location.href = nextPageUrl;
+    await new Promise(res => setTimeout(res, 2500)); // Wait for page load
+    // Parse job links on this page
+    const jobLinks = Array.from(document.querySelectorAll('a[href*="/jobs/"]')).map(a => a.href);
+    total += jobLinks.length;
+    for (let i = 0; i < jobLinks.length; i++) {
+      try {
+        // Open each job posting in a new tab
+        const jobTab = window.open(jobLinks[i], '_blank');
+        await new Promise(res => setTimeout(res, 2000));
+        // Anti-bot/captcha detection
+        if (jobTab.document.body.innerText.match(/captcha|robot|verify/i)) {
+          showCaptchaModal();
+          throw new Error('Anti-bot detected');
+        }
+        // Inject and call the board's run() function
+        jobTab.eval(`import('/content/sites/site_${board}.js').then(m => m.${runFnName}())`);
+        applied++;
+        window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
+        jobTab.close();
+        await new Promise(res => setTimeout(res, 1500)); // Rate limit
+      } catch (e) {
+        failed++;
+        logError(e, { board, job: jobLinks[i] });
+        window.updateDashboardAutoApplyProgress?.(`Applied: ${applied}, Failed: ${failed}, Remaining: ${total - (applied + failed)}`);
+        showRecoveryModal(e, () => fullAutoApply(board, searchUrl, runFnName), () => {}, () => {});
+      }
     }
+    // Pagination: look for next page link
+    const nextBtn = document.querySelector('a[aria-label*="Next"], a[rel="next"], .pagination-next, .next-page');
+    nextPageUrl = nextBtn ? nextBtn.href : null;
+    pageCount++;
   }
   showUwUToast(`Full auto-apply complete: ${applied} succeeded, ${failed} failed.`, failed ? 'error' : 'success');
 }
