@@ -1,0 +1,98 @@
+export const CONFIG = {
+ 
+
+  // === Personal Info ===
+  name: "William Majewski‑Wood",
+  email: "rainfury4u@gmail.com",
+  phone: "7734617447",
+  address: "Chicago, IL",
+  currentLocation: "Chicago, IL",
+  portfolio: "https://rainfury4u.github.io/",
+  availabilityDate: new Date().toISOString().slice(0, 10),
+  salaryExpect: "Negotiable",
+
+  // === Education ===
+  education: [
+    {
+      school: "University of Notre Dame",
+      degree: "B.S. in General Science",
+      year: "Graduated",
+      gpa: "3.76"
+    }
+  ],
+
+  // === Experience ===
+  experience: [
+    {
+      company: "Walgreens",
+      title: "CSR Lead",
+      dates: "March 2022 – Present",
+      duties: "Oversaw 20+ staff, increased satisfaction by 30%, trained and mentored 15+ team members, resolved complex POS/software issues, developed skills in upselling and inventory analysis."
+    },
+    {
+      company: "Holiday Inn Express",
+      title: "Night Auditor",
+      dates: "May 2019 – Feb 2022",
+      duties: "Managed night operations at a 150-room hotel, ensured smooth guest services and accurate financial auditing, automated reporting tasks saving 10+ hours/week, improved guest satisfaction scores."
+    },
+    {
+      company: "United Airlines",
+      title: "Flight Attendant Supervisor",
+      dates: "June 2015 – April 2019",
+      duties: "Led flight crews and ensured compliance with service standards, contributed to development/testing of mobile/web tools, participated in code reviews and implemented new features, youngest promoted to supervisor."
+    }
+  ],
+
+  // === Skills & Certifications ===
+  skills: [
+    "Team Leadership",
+    "Customer Service",
+    "Cash Handling",
+    "Problem Solving",
+    "Inventory Management",
+    "Upselling"
+  ],
+
+  certifications: [
+    "FFA – Aircraft Safety Standard"
+  ],
+
+  languages: [
+    "English (Fluent)",
+    "Polish (Conversational)"
+  ],
+
+  // === References ===
+  references: [
+    {
+      name: "Maria Torres",
+      relation: "Manager at Walgreens",
+      contact: "maria.torres@example.com"
+    },
+    {
+      name: "James Holloway",
+      relation: "Supervisor at United Airlines",
+      contact: "james.holloway@example.com"
+    }
+  ],
+
+  // === EEOC / Demographic Defaults ===
+  disabledVeteran: "No",
+  legallyAuthorized: "Yes",
+  requireSponsorship: "No",
+  ethnicity: "Prefer not to say",
+  gender: "Prefer not to say",
+  disabilityStatus: "No",
+
+  // === Default Cover Letter Template (fallback if OpenRouter fails) ===
+  coverLetter: `Dear Hiring Manager,
+
+I’m a Customer Service and Hospitality Professional with over a decade of experience across the retail, hotel, and airline industries. Known for my leadership, adaptability, and problem-solving skills, I've improved customer satisfaction by 30% at Walgreens and led cross-functional teams at United Airlines and Holiday Inn.
+
+I’m passionate about streamlining operations, mentoring staff, and creating positive customer experiences. My proven record in fast-paced environments and dedication to excellence makes me a strong fit for your team.
+
+Thank you for considering my application. You can learn more at my portfolio: https://rainfury4u.github.io/.
+
+Sincerely,  
+William Majewski-Wood`
+};
