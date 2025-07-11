@@ -216,14 +216,14 @@
       if (key && key !== '••••••••') {
         await chrome.storage.local.set({ openrouter_api_key: key });
         apiInput.value = '••••••••';
-        showUwUToast('API key saved!');
+        announceAction('API key saved!');
       }
     });
     // Resume select logic
     const resumeSelect = tabContent.querySelector('#uwu-settings-resume');
     resumeSelect.addEventListener('change', async () => {
       await chrome.storage.local.set({ selected_resume: resumeSelect.value });
-      showUwUToast('Resume selected!');
+      announceAction('Resume selected!');
     });
     // Resume upload logic
     const uploadInput = tabContent.querySelector('#uwu-settings-upload');
@@ -239,7 +239,7 @@
         const dataUrl = e.target.result;
         const key = `resume_${file.name}`;
         await chrome.storage.local.set({ [key]: dataUrl });
-        showUwUToast('Resume uploaded!');
+        announceAction('Resume uploaded!');
         renderSettingsTab();
       };
       reader.readAsDataURL(file);
@@ -255,6 +255,50 @@
       await chrome.storage.local.set({ uwu_anim: animCheckbox.checked });
       showUwUToast(animCheckbox.checked ? 'Animations enabled!' : 'Animations disabled!');
     });
+
+    // Dynamic Answer Library (in Settings tab)
+    const answerLibraryContainer = document.createElement('div');
+    answerLibraryContainer.id = 'uwu-answer-library';
+    answerLibraryContainer.innerHTML = `
+      <h3>Answer Library</h3>
+      <p>Add, edit, or delete default answers for common job application questions.</p>
+      <div class="uwu-answer-row">
+        <label>Why do you want this job?</label>
+        <textarea aria-label="Answer for: Why do you want this job" data-q="Why do you want this job">${userAnswers['Why do you want this job'] || ''}</textarea>
+        <button aria-label="Save answer for Why do you want this job" data-q="Why do you want this job">Save</button>
+      </div>
+      <div class="uwu-answer-row">
+        <label>Describe your experience</label>
+        <textarea aria-label="Answer for: Describe your experience" data-q="Describe your experience">${userAnswers['Describe your experience'] || ''}</textarea>
+        <button aria-label="Save answer for Describe your experience" data-q="Describe your experience">Save</button>
+      </div>
+      <div class="uwu-answer-row">
+        <label>Are you willing to relocate?</label>
+        <textarea aria-label="Answer for: Are you willing to relocate?" data-q="Are you willing to relocate?">${userAnswers['Are you willing to relocate?'] || ''}</textarea>
+        <button aria-label="Save answer for Are you willing to relocate?" data-q="Are you willing to relocate?">Save</button>
+      </div>
+      <div class="uwu-answer-row">
+        <label>What is your expected salary?</label>
+        <textarea aria-label="Answer for: What is your expected salary?" data-q="What is your expected salary?">${userAnswers['What is your expected salary?'] || ''}</textarea>
+        <button aria-label="Save answer for What is your expected salary?" data-q="What is your expected salary?">Save</button>
+      </div>
+      <div class="uwu-answer-row">
+        <label>When can you start?</label>
+        <textarea aria-label="Answer for: When can you start?" data-q="When can you start?">${userAnswers['When can you start?'] || ''}</textarea>
+        <button aria-label="Save answer for When can you start?" data-q="When can you start?">Save</button>
+      </div>
+    `;
+    answerLibraryContainer.querySelectorAll('button').forEach(btn => {
+      btn.onclick = e => {
+        const q = btn.getAttribute('data-q');
+        const val = btn.previousElementSibling.value;
+        userAnswers[q] = val;
+        localStorage.setItem('uwu_answers', JSON.stringify(userAnswers));
+        showUwUToast('Answer saved!', 'success');
+      };
+    });
+    tabContent.appendChild(answerLibraryContainer);
+    renderAnswerLibrary(); // Call renderAnswerLibrary() when settings tab is shown
   }
   function showTab(idx) {
     tabBtns.forEach((btn, i) => {
@@ -304,4 +348,172 @@
       e.preventDefault();
     }
   });
+
+  // Playful micro-interactions and delight features
+  const uwuFacts = [
+    'UwU means “happy face” in internet speak!',
+    'Did you know? Lightning is hotter than the sun!',
+    'UwU-HireMeDaddy supports keyboard navigation everywhere!',
+    'Gold is the only metal that is yellow or "golden".',
+    'UwU: Accessibility is for everyone!'
+  ];
+  function showRandomUwUFact() {
+    const fact = uwuFacts[Math.floor(Math.random() * uwuFacts.length)];
+    if (toastRegion) {
+      toastRegion.textContent = fact;
+      setTimeout(() => { toastRegion.textContent = ''; }, 3500);
+    }
+    showUwUToast(fact);
+  }
+  function showUwUToast(message, type = 'info') {
+    // Reuse or create a toast container
+    let container = document.getElementById('uwu-dashboard-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'uwu-dashboard-toast-container';
+      container.style.position = 'fixed';
+      container.style.left = '50%';
+      container.style.bottom = '24px';
+      container.style.transform = 'translateX(-50%)';
+      container.style.zIndex = '9999';
+      document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = `uwu-toast ${type}`;
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('tabindex', '0');
+    toast.innerHTML = `<span class='uwu-bolt' aria-hidden='true'>\u26a1</span> <span>${message}</span> <span class='uwu-face' aria-hidden='true'>UwU</span>`;
+    container.appendChild(toast);
+    toast.focus();
+    setTimeout(() => toast.remove(), 4000);
+  }
+  // Confetti animation
+  function showUwUConfetti() {
+    for (let i = 0; i < 18; i++) {
+      const conf = document.createElement('div');
+      conf.className = 'uwu-confetti';
+      conf.style.position = 'fixed';
+      conf.style.left = Math.random() * 100 + 'vw';
+      conf.style.top = '-24px';
+      conf.style.fontSize = '1.5em';
+      conf.style.color = '#ffd700';
+      conf.textContent = Math.random() > 0.5 ? '⚡' : 'UwU';
+      conf.style.transition = 'top 1.2s cubic-bezier(.68,-0.55,.27,1.55)';
+      document.body.appendChild(conf);
+      setTimeout(() => {
+        conf.style.top = (Math.random() * 80 + 10) + 'vh';
+      }, 10);
+      setTimeout(() => conf.remove(), 1400);
+    }
+  }
+  // Konami code Easter egg
+  let konamiBuffer = [];
+  const konamiCode = [
+    'ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'
+  ];
+  document.addEventListener('keydown', e => {
+    konamiBuffer.push(e.key);
+    if (konamiBuffer.length > konamiCode.length) konamiBuffer.shift();
+    if (konamiBuffer.join(',') === konamiCode.join(',')) {
+      showUwUConfetti();
+      showUwUToast('Secret UwU Mode Activated! ✨');
+      playUwUSound('maximize');
+      konamiBuffer = [];
+    }
+  });
+  // Advanced keyboard shortcuts
+  overlay.addEventListener('keydown', e => {
+    if (e.ctrlKey && e.key.toLowerCase() === 'm') {
+      setMaximized(!maximized);
+      e.preventDefault();
+    }
+    if (e.ctrlKey && e.key.toLowerCase() === 'h') {
+      showTab(0);
+      e.preventDefault();
+    }
+    if (e.ctrlKey && e.key.toLowerCase() === 'e') {
+      showTab(1);
+      e.preventDefault();
+    }
+    if (e.ctrlKey && e.key.toLowerCase() === 's') {
+      showTab(2);
+      e.preventDefault();
+    }
+  });
+  // ARIA live feedback for resume upload, API key save, error log clear
+  function announceAction(message) {
+    if (toastRegion) {
+      toastRegion.textContent = message;
+      setTimeout(() => { toastRegion.textContent = ''; }, 2000);
+    }
+    showUwUToast(message);
+  }
+
+  // Auto-Apply button and modal
+  function showAutoApplyModal() {
+    const modal = document.createElement('div');
+    modal.className = 'uwu-auto-apply-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.innerHTML = `
+      <h2>Auto-Apply Setup</h2>
+      <form id='uwu-auto-apply-form'>
+        <label>Job Boards:<br>
+          <input type='checkbox' name='board' value='linkedin' checked> LinkedIn
+          <input type='checkbox' name='board' value='indeed' checked> Indeed
+          <input type='checkbox' name='board' value='monster'> Monster
+          <input type='checkbox' name='board' value='glassdoor'> Glassdoor
+        </label><br>
+        <label>Job Title: <input name='title' required></label><br>
+        <label>Location: <input name='location'></label><br>
+        <label>Filters: <input name='filters'></label><br>
+        <button type='submit'>Start Auto-Apply</button>
+        <button type='button' id='uwu-cancel-auto-apply'>Cancel</button>
+      </form>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('#uwu-cancel-auto-apply').onclick = () => modal.remove();
+    modal.querySelector('form').onsubmit = e => {
+      e.preventDefault();
+      const boards = Array.from(modal.querySelectorAll('input[name="board"]:checked')).map(i => i.value);
+      const title = modal.querySelector('input[name="title"]').value;
+      const location = modal.querySelector('input[name="location"]').value;
+      const filters = modal.querySelector('input[name="filters"]').value;
+      modal.remove();
+      startAutoApply(boards, title, location, filters);
+    };
+  }
+  // Add Auto-Apply button to dashboard header
+  const autoApplyBtn = document.createElement('button');
+  autoApplyBtn.textContent = 'Auto-Apply';
+  autoApplyBtn.setAttribute('aria-label', 'Start Auto-Apply');
+  autoApplyBtn.onclick = showAutoApplyModal;
+  document.querySelector('.uwu-dashboard-header').appendChild(autoApplyBtn);
+
+  // Auto-Apply logic
+  function startAutoApply(boards, title, location, filters) {
+    // For each board, open a new tab and inject search/apply logic
+    boards.forEach(board => {
+      const url = getBoardSearchUrl(board, title, location, filters);
+      window.open(url, '_blank');
+      // In content script for each board, detect jobs and auto-apply
+      // Progress and errors are logged and shown in dashboard
+    });
+    showUwUToast('Auto-Apply started! Check new tabs.', 'success');
+  }
+  function getBoardSearchUrl(board, title, location, filters) {
+    // Return search URL for each board
+    switch (board) {
+      case 'linkedin':
+        return `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(title)}&location=${encodeURIComponent(location)}&${encodeURIComponent(filters)}`;
+      case 'indeed':
+        return `https://www.indeed.com/jobs?q=${encodeURIComponent(title)}&l=${encodeURIComponent(location)}&${encodeURIComponent(filters)}`;
+      case 'monster':
+        return `https://www.monster.com/jobs/search/?q=${encodeURIComponent(title)}&where=${encodeURIComponent(location)}&${encodeURIComponent(filters)}`;
+      case 'glassdoor':
+        return `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(title)}&locT=C&locId=&locKeyword=${encodeURIComponent(location)}&${encodeURIComponent(filters)}`;
+      default:
+        return '';
+    }
+  }
 })(); 
