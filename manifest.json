@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "UwU‑HireMeDaddy",
+  "version": "2.0",
+  "description": "Automatically fills out job applications and tracks where you've applied. Uses OpenRouter AI to generate cover letters.",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab",
+    "notifications"
+  ],
+  "host_permissions": [
+    "*://*.indeed.com/*",
+    "*://*.linkedin.com/*",
+    "*://*.glassdoor.com/*",
+    "*://*.monster.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.indeed.com/*",
+        "*://*.linkedin.com/*",
+        "*://*.glassdoor.com/*",
+        "*://*.monster.com/*"
+      ],
+      "js": ["content/core.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+UwU-HireMeDaddy/
+├── manifest.json
+├── background.js
+├── scheduler.js
+├── content/
+│   ├── core.js
+│   ├── aiCover.js
+│   ├── site_indeed.js
+│   ├── site_linkedin.js
+│   ├── site_glassdoor.js
+│   ├── site_monster.js
+│   └── uploader.js
+├── popup/
+│   ├── index.html
+│   ├── popup.js
+│   ├── settings.js
+│   └── popup.css
+├── utils/
+│   ├── config.js
+│   ├── logger.js
+│   ├── storage.js
+│   └── scheduler.js
+├── assets/
+│   └── resume.pdf
+└── tests/
+    └── formfill.test.js
