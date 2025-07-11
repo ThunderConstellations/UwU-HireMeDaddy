@@ -94,3 +94,35 @@ function updateAutoApplyProgress(applied, total, failed) {
     region.setAttribute('aria-live', 'polite');
   }
 }
+
+// Multi-language support for form responses
+async function detectLanguage(text) {
+  // Simple language detection using LibreTranslate API
+  try {
+    const res = await fetch('https://libretranslate.de/detect', {
+      method: 'POST',
+      body: JSON.stringify({ q: text }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    return data[0]?.language || 'en';
+  } catch (e) {
+    logError(e, { action: 'detectLanguage' });
+    return 'en';
+  }
+}
+async function translateAnswer(answer, targetLang) {
+  if (!answer || targetLang === 'en') return answer;
+  try {
+    const res = await fetch('https://libretranslate.de/translate', {
+      method: 'POST',
+      body: JSON.stringify({ q: answer, source: 'en', target: targetLang }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    return data.translatedText || answer;
+  } catch (e) {
+    logError(e, { action: 'translateAnswer' });
+    return answer;
+  }
+}
