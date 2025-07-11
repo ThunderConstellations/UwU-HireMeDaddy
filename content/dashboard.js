@@ -490,6 +490,18 @@
   autoApplyBtn.onclick = showAutoApplyModal;
   document.querySelector('.uwu-dashboard-header').appendChild(autoApplyBtn);
 
+  // Auto-Apply progress UI
+  const autoApplyProgress = document.createElement('div');
+  autoApplyProgress.id = 'uwu-auto-apply-progress';
+  autoApplyProgress.setAttribute('aria-live', 'polite');
+  autoApplyProgress.className = 'uwu-auto-apply-progress';
+  document.querySelector('.uwu-dashboard-header').appendChild(autoApplyProgress);
+  function updateDashboardAutoApplyProgress(msg) {
+    autoApplyProgress.textContent = msg;
+  }
+  // Hook into core.js updateAutoApplyProgress
+  window.updateDashboardAutoApplyProgress = updateDashboardAutoApplyProgress;
+
   // Auto-Apply logic
   function startAutoApply(boards, title, location, filters) {
     // For each board, open a new tab and inject search/apply logic

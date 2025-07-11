@@ -65,3 +65,32 @@ async function submitWithRetry(form, maxRetries = 3) {
   showUwUToast('Submission failed after retries', 'error');
   return false;
 }
+
+// Auto-Apply progress and error handling
+async function autoApplyJobs(board, searchUrl, answers) {
+  // Open the job board search page in a new tab and inject script
+  // This is a stub for content script logic
+  let jobs = await fetchJobList(board, searchUrl); // Should return array of job links
+  let applied = 0, failed = 0;
+  for (const job of jobs) {
+    try {
+      await openAndApplyToJob(job, answers);
+      logApplication({ board, job, status: 'success', ts: Date.now() });
+      applied++;
+      updateAutoApplyProgress(applied, jobs.length, failed);
+    } catch (e) {
+      logError(e, { board, job });
+      logApplication({ board, job, status: 'error', ts: Date.now(), error: e.message });
+      failed++;
+      updateAutoApplyProgress(applied, jobs.length, failed);
+    }
+  }
+  showUwUToast(`Auto-Apply complete: ${applied} succeeded, ${failed} failed.`, failed ? 'error' : 'success');
+}
+function updateAutoApplyProgress(applied, total, failed) {
+  const region = document.getElementById('uwu-dashboard-toast-container');
+  if (region) {
+    region.textContent = `Auto-Apply Progress: ${applied}/${total} applied, ${failed} failed.`;
+    region.setAttribute('aria-live', 'polite');
+  }
+}
